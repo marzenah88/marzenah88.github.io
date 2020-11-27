@@ -7,6 +7,15 @@ import fetch from 'node-fetch';
 import { open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 
+async function dataFetch() {
+	const url = "https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json";
+	const response = await fetch(url);
+
+	return response.json()
+
+}
+
+
 async function databaseInitialize(dbSettings) {
 	try {
 		const db = await open(dbSettings);
