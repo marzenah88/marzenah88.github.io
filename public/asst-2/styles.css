@@ -1,46 +1,109 @@
-body {
-  background-color: indigo;
-}
-
-h1 {
-  display: block;
-  color: #eee;
-  padding: 12px;
-  font-weight: bold;
-  text-decoration: underline;
-}
-
-.textentry {
+html {
+  height: 100%;
   width: 100%;
 }
-
-span.name {
-  font-weight: 900;
-  font-size: 16px;
+body {
+  background: linear-gradient(rgb(7, 199, 224) 35%, rgb(11, 54, 248) 100%);
+  background-attachment: fixed;
+  line-height: 1.6;
+  font-weight: 400;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
-
-#navcontainer {
-  padding: 0 0 1em 0;
-  color: #333;
+.wrapper {
+  display: flex;
+  flex-direction: column;
 }
-
-#navcontainer ul {
-  list-style: none;
+.container {
+  min-height: 100%;
+}
+.header {
+  color: #fff;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
   margin: 0;
-  padding: 0;
-  border: none;
-  width: auto;
+  margin-bottom: 5px;
+  padding: 4px 8px;
+  border-radius: 5px;
 }
-
-#navcontainer li {
-  border-bottom: 1px solid #90bade;
-  margin: 0;
-  padding: 10px;
-  border-radius: 3px;
-  background: rgb(238, 232, 170);
-  background: linear-gradient(
-    180deg,
-    rgba(238, 232, 170, 1) 35%,
-    rgba(255, 251, 238, 1) 100%
-  );
+h1 {
+  margin: 20px 50px;
+  padding: 5px 20px;
+  min-height: 75px;
+  background-color: rgb(49, 85, 245);
+  color: rgb(207, 215, 216);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.5em;
+  text-transform: capitalize;
+  flex-wrap: nowrap;
+  border-radius: 16px;
+}
+.textinput {
+  margin: 6px 50px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-right: 15px;
+  padding-left: 15px;
+  border-radius: 16px;
+  line-height: 1;
+  min-width: 580px;
+  font-size: 25px;
+  text-align: center;
+  color: rgb(101, 125, 139);
+}
+.searchbar {
+  min-width: 650px; 
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+  text-transform: initial;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.highlightme { 
+  background-color:rgb(223, 219, 8); 
+}
+.suggestions {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding-left: 0px;
+}
+li {
+  margin: 6px 50px;
+  padding: 0 20px;
+  min-height: 50px;
+  min-width: 500px;
+  background-color: rgb(231, 231, 231);
+  color: rgb(2, 0, 107);
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  font-weight: bold;
+  font-size: 1.0em;
+  border-radius: 16px;
+}
+.textinput[type='text']::placeholder {   
+  font-size: 20px;
+  text-align: center;
+  color: rgb(176, 211, 233);
+}
+.name {
+  text-transform: uppercase;
+}
+.cityAndZip {
+  text-transform: capitalize;
+}
+.inspectionResults, .establishmentType {
+  font-family: 'Eczar', serif;
+  font-style: oblique;
+  color: rgb(93, 125, 145);
 }
