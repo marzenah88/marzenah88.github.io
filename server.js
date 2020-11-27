@@ -29,8 +29,6 @@ async function databaseInitialize(dbSettings) {
 	}
 }
 
-
-
 dotenv.config();
 
 const app = express();
