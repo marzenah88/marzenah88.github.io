@@ -10,7 +10,13 @@ import sqlite3 from 'sqlite3';
 async function databaseInitialize(dbSettings) {
 	try {
 		const db = await open(dbSettings);
-		console.log("Success");
+		await db.exec("CREATE TABLE IF NOT EXISTS restaurants (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			restaurant_name TEXT,
+			category TEXT)
+			")
+		const test = await db.get("SELECT * FROM restaurants")
+		console.log(test);
 
 	}
 	catch(e) {
