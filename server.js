@@ -9,9 +9,14 @@ import sqlite3 from 'sqlite3';
 
 dotenv.config();
 
-/*const sqlite3 = require('sqlite3').verbose()*/
 const app = express();
 const port = process.env.PORT || 3000;
+const dbSettings = {
+	filename: './tmp/database.db',
+	driver: sqlite3.Database
+};
+
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
