@@ -4,10 +4,12 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
+import { open } from 'sqlite';
+import sqlite3 from 'sqlite3';
 
 dotenv.config();
 
-const sqlite3 = require('sqlite3').verbose()
+/*const sqlite3 = require('sqlite3').verbose()*/
 const app = express();
 const port = process.env.PORT || 3000;
 
