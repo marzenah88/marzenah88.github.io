@@ -10,20 +10,25 @@ import sqlite3 from 'sqlite3';
 async function databaseInitialize(dbSettings) {
 	try {
 		const db = await open(dbSettings);
-		await db.exec("CREATE TABLE IF NOT EXISTS restaurants (
+		await db.exec(`CREATE TABLE IF NOT EXISTS restaurants (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			restaurant_name TEXT,
 			category TEXT)
-			")
+			`)
+
+		const data = await dataFetch();
+
 		const test = await db.get("SELECT * FROM restaurants")
 		console.log(test);
 
 	}
 	catch(e) {
 		console.log("Error loading Database");
+		console.log(e);
 
 	}
 }
+
 
 
 dotenv.config();
