@@ -1,39 +1,38 @@
-function matchWord(wordMatch, data) {
-  return data.filter((item) => {
-    const regex = new RegExp(wordMatch, 'gi'); // This matches case-insensitively through the whole string
-    // check names first
-    // we could also check owners or compliance!
-    return item.name.match(regex) || item.category.match(regex);
+const pg_data = 'https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json';
+console.log(pg_data);
+const venues = [];
+
+fetch(pg_data)
+  .then(blob => blob.json())
+  .then(data => venues.push(...data))
+  
+
+function findMatches(wordsToMatch, venues) {
+  return venues.filter(venue => {
+    const regex = new RegExp(wordsToMatch, 'gi');
+    if (!(regex === null || venue.name === null || venue.city === null)) {
+      return venue.name.match(regex) || venue.zip.match(regex) || venue.category.match(regex); 
+    }
   });
 }
-
-function displayMatches(e, dataSet) {
-  console.log(e.target.value);
-  const matches = matchWord(e.target.value, dataSet);
-  let placesHTML = matches.map((place) => `
-    <li>
-        <span class="name">${place.name}</span><br>
-        <span class="category">${place.category}</span>
-        <address>${place.address_line_1}<br>
-        ${place.city}<br>
-        ${place.zip}<address>
-    </li>
-    `);
-  if (e.target.value.length == 0) {
-    placesHTML = [];
-  }
-  return placesHTML;
+function displayMatches() {
+  const matchArray = findMatches(this.value, venues);
+  const html = matchArray.map(venue => {
+    const regex = new RegExp(this.value, 'gi');
+    const venueName = venue.name.replace(regex, `<span class="highlightme">${this.value}</span>`);
+    const venueZip = venue.zip.replace(regex, `<span class="highlightme">${this.value}</span>`); 
+    const venueCategory = venue.category.replace(regex, `<span class="highlightme">${this.value}</span>`); 
+    return `
+      <li>
+        <span class="name">${venueName.toLowerCase()},  </span>
+        <span class="stateAndZip"> ${'MD '}${venueZip},  </span>
+        <span class="establishmentType">${'Category: '} ${venueCategory.toLowerCase()}  </span>
+        <span class="inspectionResults">${'Inspection results: '} ${venues.inspection_results}</span>
+      </li>
+    `;
+  }).join('');
+  suggestions.innerHTML = html;
 }
-
-async function mainThread() {
-  const data = await fetch('https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json');
-  const json = await data.json();
-  const input = document.querySelector('input[type="text"]');
-  input.addEventListener('input', (e) => {
-    const makeMatchesList = displayMatches(e, json);
-    const target = document.querySelector('.suggestions');
-    target.innerHTML = makeMatchesList;
-  });
-}
-
-window.onload = mainThread;
+const searchInput = document.querySelector('.textinput');
+const suggestions = document.querySelector('.suggestions');
+searchInput.addEventListener('input', displayMatches);
