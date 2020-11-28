@@ -15,13 +15,22 @@ const port = process.env.PORT || 3000;
 
 const dbSettings = { filename: './tmp/database.db', driver: sqlite3.Database};
 async function databaseInitialize(dbSet) {
-  try {
-    const db = await open(dbSet);
-    console.log('Success');
-  } catch(e) {
-    console.log('Error loading Database');
-  }
+	try {
+		const db = await open(dbSet);
+		await db.exec(`CREATE TABLE IF NOT EXISTS restaurants (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			restaurant_name TEXT,
+			category TEXT)
+			`)
+		console.log("Success");
+
+	}
+	catch(e) {
+		console.log("Error loading Database");
+
+	}
 }
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
@@ -46,8 +55,7 @@ app.route('/api')
     console.log('Form data in res.body', req.body);
     const data = await fetch('https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json');
     const json = await data.json();
-    const test = databaseInitialize(dbSettings)
-    console.log('testing the databaseInitialize function', test);
+    databaseInitialize(dbSettings);
     res.json(json);
   });
 
