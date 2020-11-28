@@ -5,11 +5,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import { open } from 'sqlite';
-import sqlite3 from 'sqlite3';
-
-const app = express();
-const port = process.env.PORT || 3000;
-const dbSettings = { filename: './tmp/database.db', driver: sqlite3.Database};
+import sqlite3 from 'sqlite';
 
 async function foodDataFetcher() {
 	const url = "https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json";
@@ -18,18 +14,18 @@ async function foodDataFetcher() {
 }
 async function databaseInitialize(db) {
 	try {
-      db.exec(`CREATE TABLE IF NOT EXISTS food (
-		  id INTEGER PRIMARY KEY AUTOINCREMENT,
-		  name TEXT,
-      category TEXT,
-      inspection_date DATE,
-      inspection_results TEXT,
-      city TEXT,
-      state TEXT,
-      zip INTEGER,
-      owner TEXT,
-      type TEXT
-      )`);
+    db.exec(`CREATE TABLE IF NOT EXISTS food(
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT,
+    category TEXT,
+    inspection_date DATE,
+    inspection_results TEXT,
+    city TEXT,
+    state TEXT,
+    zip INTEGER,
+    owner TEXT,
+    type TEXT
+    )`);
     console.log("Success");
 	}
 	catch(e) {
@@ -38,7 +34,7 @@ async function databaseInitialize(db) {
 }
 async function dataItemInput(data, db) {
 	try {
-    fields = [name, category, inspection_date, inspection_results, city, state, zip, owner, type]
+    fields = [name, category, inspection_date, inspection_results, city, state, zip, owner, type];
 		const name = data.name;
     const category = data.category;
     const inspection_date = data.inspection_date;
@@ -51,17 +47,17 @@ async function dataItemInput(data, db) {
     
     db.exec(`INSERT INTO food (fields) VALUES ("${name}", "${category}", "${inspection_date}", 
           "${inspection_results}", ${city}", "${state}", "${zip}", "${owner}", ${type}")`);
-		}
+	}
   catch(e) {
 		console.log('Error on item insertion');
 		console.log(e);
-		}
+	}
 }
 async function dataInput(settings) {
   const db = await open(settings);
   databaseInitialize(db);
   const fdata = await foodDataFetcher();
-  data.forEach((entry) => { itemInput(entry)});
+  data.forEach((entry) => dataItemInput(entry, db));
   try {
 		const test = await db.get("SELECT * FROM food");
 		console.log(test);
@@ -71,8 +67,9 @@ async function dataInput(settings) {
 		console.log(e);
 	}
 }
-
-dotenv.config();
+async function databaseRetriever() {
+  
+}
 
 
 app.use(express.urlencoded({ extended: true }));
@@ -85,6 +82,10 @@ app.use((req, res, next) => {
   next();
 });
 
+const app = express();
+const port = process.env.PORT || 3000;
+const dbSettings = { filename: './tmp/database.db', driver: sqlite3.Database};
+dotenv.config();
 
 app.route('/sql')
   .get(async(req, res) => {
@@ -93,9 +94,9 @@ app.route('/sql')
   .post(async (req, res) => {
     console.log('POST request detected');
     console.log('Form data in res.body', req.body);
-    const output = databaseInitialize(dbSettings) 
-    console.log('data from fetch', JSON);
-    res.SQL(output);
+    const json = await databaseRetriever();
+    console.log('fetch request data', json);
+    res.send(json);
   });
 
 app.listen(port, () => {
