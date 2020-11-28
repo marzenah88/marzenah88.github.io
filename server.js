@@ -10,52 +10,65 @@ import sqlite3 from 'sqlite3';
 const app = express();
 const port = process.env.PORT || 3000;
 const dbSettings = { filename: './tmp/database.db', driver: sqlite3.Database};
+
 async function foodDataFetcher() {
 	const url = "https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json";
 	const response = await fetch(url);
-	return response.json()
+	return response.json();
 }
-async function dataItemInput(data) {
+async function databaseInitialize(db) {
+	try {
+      db.exec(`CREATE TABLE IF NOT EXISTS food (
+		  id INTEGER PRIMARY KEY AUTOINCREMENT,
+		  name TEXT,
+      category TEXT,
+      inspection_date DATE,
+      inspection_results TEXT,
+      city TEXT,
+      state TEXT,
+      zip INTEGER,
+      owner TEXT,
+      type TEXT
+      )`);
+    console.log("Success");
+	}
+	catch(e) {
+		console.log("Error initializing database");
+	}
+}
+async function dataItemInput(data, db) {
 	try {
     fields = [name, category, inspection_date, inspection_results, city, state, zip, owner, type]
 		const name = data.name;
     const category = data.category;
+    const inspection_date = data.inspection_date;
+    const inspection_results = data.inspection_results;
+    const city = data.city;
+    const state = data.state;
+    const zip = data.zip;
+    const owner = data.owner;
+    const type = data.type;
     
-		await db.exec(`INSERT INTO food (fields) VALUES ("${restaurant_name}", "${category}")`);
-		console.log(`${restaurant_name} and ${category} inserted`);
+    db.exec(`INSERT INTO food (fields) VALUES ("${name}", "${category}", "${inspection_date}", 
+          "${inspection_results}", ${city}", "${state}", "${zip}", "${owner}", ${type}")`);
 		}
   catch(e) {
-		console.log('Error on insertion');
+		console.log('Error on item insertion');
 		console.log(e);
 		}
-
 }
-async function databaseInitialize(dbSettings) {
-	const db = await open(dbSettings);
-		await db.exec(`CREATE TABLE IF NOT EXISTS food (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT,
-    category TEXT,
-    inspection_date DATE,
-    inspection_results TEXT,
-    city TEXT,
-    state TEXT,
-    zip INTEGER,
-    owner TEXT,
-    type TEXT
-    )`)
-}
+async function dataInput(settings) {
+  const db = await open(settings);
+  databaseInitialize(db);
+  const fdata = await foodDataFetcher();
+  data.forEach((entry) => { itemInput(entry)});
   try {
-		const data = await foodDataFetcher();
-		data.forEach((entry) => { itemInput(entry) });
-		const test = await db.get("SELECT * FROM restaurants")
+		const test = await db.get("SELECT * FROM food");
 		console.log(test);
-
 	}
 	catch(e) {
-		console.log("Error loading Database");
+		console.log("Error loading database");
 		console.log(e);
-
 	}
 }
 
