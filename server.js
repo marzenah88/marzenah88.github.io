@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import { open } from 'sqlite';
 import sqlite3 from 'sqlite3';
+import { fromPairs } from 'cypress/types/lodash';
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ async function dataInput(dbItem) {
           "${inspection_results}", ${city}", "${state}", "${zip}", "${owner}", ${type}")`);
 }
 
-async function databaseInitialize(dbSet) {
+async function databaseInitialize(db) {
 	try {
 		await db.exec(`CREATE TABLE IF NOT EXISTS food (id INTEGER PRIMARY KEY AUTOINCREMENT, 
       name TEXT,
@@ -54,11 +55,13 @@ async function databaseInitialize(dbSet) {
 	catch(e) {
 		console.log("Error loading Database");
 		console.log(e);
-	}
+  }
+  
 }
 
-async function dataRetriever() {
-
+async function dataRetriever(db) {
+ const result = await db.exec(`SELECT category, COUNT(DISTINCT category) FROM db`);
+  return result.json;
 }
 
 app.use(express.urlencoded({ extended: true }));
@@ -86,7 +89,7 @@ app.route('/sql')
 		const db = await open(dbSettings);
     const output = await dataRetriever(db);
     // This output must be converted to SQL
-    res.sqlite3(output);
+    res.json(output);
   });
 
 app.route('/api')
