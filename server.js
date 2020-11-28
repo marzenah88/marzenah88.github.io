@@ -22,8 +22,6 @@ async function databaseInitialize(dbSet) {
     console.log('Error loading Database');
   }
 }
-databaseInitialize(dbSettings);
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
