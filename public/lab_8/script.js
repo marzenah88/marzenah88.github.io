@@ -1,3 +1,17 @@
+function convertRestaurantsToCategories(restaurantList) {
+  const categories = restaurantList.reduce((cat_list, restaurant, index) => {
+    const findCat = cat_list.find((findItem) => findItem.label === restaurant.category);
+    if (!findCat) {
+      cat_list.push({y: 1, label: restaurant.category});
+    } else {
+      index = cat_list.indexOf(findCat);
+      cat_list[index].y += 1;
+    }
+    return cat_list;
+  }, []);
+  console.log(categories);
+  return categories;
+}
 
 function makeYourOptionsObject(listOfCatObjects) {
   // set your chart configuration here!
@@ -45,15 +59,17 @@ function runThisWithResultsFromServer(jsonFromServer) {
   // Process your restaurants list
   // Make a configuration object for your chart
   // Instantiate your chart
-  const options = makeYourOptionsObject(jasonFromServer);
+  const reorganizedData = convertRestaurantsToCategories(jsonFromServer);
+  const options = makeYourOptionsObject(reorganizedData);
   const chart = new CanvasJS.Chart('chartContainer', options);
   chart.render();
 }
+
 /// Leave lines 52-67 alone; do your work in the functions above
 document.body.addEventListener('submit', async (e) => {
   e.preventDefault(); // this stops whatever the browser wanted to do itself.
   const form = $(e.target).serializeArray();
-  fetch('/sql', {
+  fetch('/api', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
