@@ -36,7 +36,6 @@ async function dataInput(dbItem) {
 
 async function databaseInitialize(dbSet) {
 	try {
-		const db = await open(dbSet);
 		await db.exec(`CREATE TABLE IF NOT EXISTS food (id INTEGER PRIMARY KEY AUTOINCREMENT, 
       name TEXT,
       category TEXT,
@@ -59,7 +58,7 @@ async function databaseInitialize(dbSet) {
 }
 
 async function dataRetriever() {
-  
+
 }
 
 app.use(express.urlencoded({ extended: true }));
@@ -71,6 +70,24 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
+app.route('/sql')
+  .get(async (req, res) => {
+    console.log('GET request detected');
+    const data = await fetch('https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json');
+    const json = await data.json();
+    console.log('data from fetch', json);
+    res.json(json);
+  })
+  .post(async (req, res) => {
+    console.log('POST request detected');
+    console.log('Form data in res.body', req.body);
+    // This is where the SQL retrieval function will be:
+    // Please remove the below variable
+		const db = await open(dbSettings);
+    const output = await dataRetriever(db);
+    // This output must be converted to SQL
+    res.sqlite3(output);
+  });
 
 app.route('/api')
   .get(async (req, res) => {
@@ -88,22 +105,7 @@ app.route('/api')
     databaseInitialize(dbSettings);
     res.json(json);
   });
-  app.route('/sql')
-  .get(async (req, res) => {
-    console.log('GET request detected');
-    const data = await fetch('https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json');
-    const json = await data.json();
-    console.log('data from fetch', json);
-    res.json(json);
-  })
-  .post(async (req, res) => {
-    console.log('POST request detected');
-    console.log('Form data in res.body', req.body);
-    const data = await fetch('https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json');
-    const json = await data.json();
-    databaseInitialize(dbSettings);
-    res.json(json);
-  });
+  
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}!`);
 });
