@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-const dbSettings = { filename: '/tmp/database.db', driver: sqlite3.Database};
+const dbSettings = { filename: './tmp/database.db', driver: sqlite3.Database};
 async function databaseInitialize(dbSet) {
 	try {
 		const db = await open(dbSet);
