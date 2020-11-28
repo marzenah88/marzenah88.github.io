@@ -17,12 +17,13 @@ const dbSettings = { filename: './tmp/database.db', driver: sqlite3.Database};
 async function databaseInitialize(dbSet) {
 	try {
 		const db = await open(dbSet);
-		await db.exec(`CREATE TABLE IF NOT EXISTS restaurants (
+		await db.exec("CREATE TABLE IF NOT EXISTS restaurants (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			restaurant_name TEXT,
 			category TEXT)
-			`)
-		console.log("Success");
+			")
+		const test = await db.get("SELECT * FROM restaurants")
+		console.log(test);
 
 	}
 	catch(e) {
@@ -56,7 +57,6 @@ app.route('/api')
     const data = await fetch('https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json');
     const json = await data.json();
     databaseInitialize(dbSettings);
-    console.log('data from fetch');
     res.json(json);
   });
 
