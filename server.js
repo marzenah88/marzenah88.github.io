@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import { open } from 'sqlite';
 import sqlite3 from 'sqlite3';
+import SQL from 'sql-template-strings';
 
 async function dataFetch() {
 	const url = "https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json";
@@ -14,8 +15,21 @@ async function dataFetch() {
 	return response.json()
 
 }
+async function insertIntoDB(data) {
+	try {
+		const restaurant_name = data.name;
+		const category = data.category;
 
+		await db.exec(`INSERT INTO restaurants (restaurant_name, category) VALUES ("${restaurant_name}", "${category}")`);
+		console.log(`${restaurant_name} and ${category} inserted`);
+		}
 
+	catch(e) {
+		console.log('Error on insertion');
+		console.log(e);
+		}
+
+}
 async function databaseInitialize(dbSettings) {
 	try {
 		const db = await open(dbSettings);
@@ -26,6 +40,8 @@ async function databaseInitialize(dbSettings) {
 			`)
 
 		const data = await dataFetch();
+		data.forEach((entry) => { insertIntoDB(entry) });
+
 
 		const test = await db.get("SELECT * FROM restaurants")
 		console.log(test);
@@ -59,22 +75,28 @@ app.use((req, res, next) => {
   next();
 });
 
-app.route('/api')
-  .get(async (req, res) => {
-    console.log('GET request detected');
-    const data = await fetch('https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json');
-    const json = await data.json();
-    console.log('data from fetch', json);
-    res.json(json);
+
+app.route('/sql')
+  .get(async(req, res) => {
+    console.log('GET detected');
   })
   .post(async (req, res) => {
     console.log('POST request detected');
     console.log('Form data in res.body', req.body);
+    // This is where the SQL retrieval function will be:
+    // Please remove the below variable
+		const db = await open(dbSettings);
+    const output = await query(db);
+    // This output must be converted to SQL
+    res.json(output);
+  });
 
-    const data = await fetch('https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json');
-    const json = await data.json();
-    console.log('data from fetch', json);
-    res.json(json);
+  .post(async (req, res) => {
+    console.log('POST request detected');
+    console.log('Form data in res.body', req.body);
+    const output = databaseInitialize(dbSettings) 
+    console.log('data from fetch', SQL);
+    res.SQL(output);
   });
 
 app.listen(port, () => {
