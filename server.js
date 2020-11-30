@@ -60,7 +60,8 @@ async function databaseInitialize(db) {
 }
 
 async function dataRetriever(db) {
- const result = await db.exec(`SELECT category, COUNT(DISTINCT category) FROM db`);
+  databaseInitialize(db);
+  const result = await db.exec(`SELECT category, COUNT(DISTINCT category) FROM db`);
   return result.json;
 }
 
