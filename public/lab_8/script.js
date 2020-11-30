@@ -58,8 +58,10 @@ document.body.addEventListener('submit', async (e) => {
   const form = $(e.target).serializeArray();
   fetch('/sql', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
     },
-    /*body: JSON.stringify(form)*/
+    body: JSON.stringify(form)
   })
     .then((fromServer) => fromServer.json())
     .then((jsonFromServer) => runThisWithResultsFromServer(jsonFromServer))
